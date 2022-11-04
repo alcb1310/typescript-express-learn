@@ -1,0 +1,24 @@
+{
+  "name": "scp-typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "node build/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q build/index.js\""
+  },
+  "author": "Andrés Court",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.14",
+    "@types/node": "^18.11.9",
+    "concurrently": "^7.5.0",
+    "typescript": "^4.8.4"
+  }
+}
