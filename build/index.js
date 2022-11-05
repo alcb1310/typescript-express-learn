@@ -17,9 +17,10 @@ const photo_entity_1 = require("./models/photo-entity");
 const db_1 = require("./db");
 const environment_1 = require("./environment");
 const app = (0, express_1.default)();
-app.get('/', (req, res) => {
+app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    yield saveData();
     res.send('Express + Typescript Server is running');
-});
+}));
 const saveData = () => __awaiter(void 0, void 0, void 0, function* () {
     const photo = new photo_entity_1.Photo();
     photo.name = "Me and Bears";
@@ -29,6 +30,6 @@ const saveData = () => __awaiter(void 0, void 0, void 0, function* () {
     photo.isPublished = true;
     yield db_1.AppDataSource.manager.save(photo);
 });
-app.listen(environment_1.port, () => {
+app.listen(5050, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${environment_1.port}`);
 });

@@ -8,7 +8,8 @@ import { port } from './environment'
 const app: Express = express()
 
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', async(req: Request, res: Response) => {
+    await saveData()
     res.send('Express + Typescript Server is running')
 })
 
@@ -25,7 +26,9 @@ const saveData = async () => {
 
 
 
-app.listen(port, () => {
+
+
+app.listen(5050, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
     
 })
