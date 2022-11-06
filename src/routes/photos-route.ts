@@ -85,7 +85,7 @@ router.delete('/:id',async (req:Request, res: Response) => {
 
     await photoRepository.remove(photoToRemove)
 
-    return res.status(204)
+    return res.sendStatus(204)
 })
 
 export default router
