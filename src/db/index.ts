@@ -3,6 +3,7 @@ import { PhotoMetadata } from '../models/photo-metadata-entity';
 import { DataSource } from "typeorm";
 
 import { dbDatabase, dbHost, dbPassword, dbPort, dbUsername } from '../environment'
+import { Author } from '../models/author-entity';
 
 
 // console.log(typeof process.env.DATABASE_PASSWORD);
@@ -17,7 +18,8 @@ const AppDataSource = new DataSource({
     database: dbDatabase,
     entities:[
         Photo,
-        PhotoMetadata
+        PhotoMetadata,
+        Author
     ],
     synchronize: true, 
     logging: false
