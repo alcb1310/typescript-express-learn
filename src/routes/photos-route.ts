@@ -1,34 +1,13 @@
 import { Request, Response, Router } from "express"
-import { Photo } from "../models/photo-entity"
-import { PhotoMetadata } from "../models/photo-metadata-entity"
-import { AppDataSource } from "../db"
+
+import { createPhoto, getOnePhotoById, getAllPhotos, updateAPhoto, deletePhoto } from '../controller/photo-controller'
 
 const router = Router()
-
-const photoRepository = AppDataSource.getRepository(Photo)
-const metadataRepository = AppDataSource.getRepository(PhotoMetadata)
 
 router.post('/', async(req: Request, res: Response) => {
     const { name, description, filename, views, isPublished } = req.body
     
-    const photo = new Photo()
-    photo.name = name
-    photo.description = description
-    photo.filename = filename
-    photo.views = views
-    photo.isPublished = isPublished
-
-    await AppDataSource.manager.save(photo)
-
-    // create a photo metadata
-    const metadata = new PhotoMetadata()
-    metadata.height = 640
-    metadata.width = 480
-    metadata.compressed = true
-    metadata.comment = "cybershoot"
-    metadata.orientation = "portrait"
-    metadata.photo = photo // this way we connect them
-    await metadataRepository.save(metadata)
+    const photo = await createPhoto(req.body)
 
     return res.status(201).json({data: photo})
 })
@@ -36,12 +15,7 @@ router.post('/', async(req: Request, res: Response) => {
 router.get('/:id', async (req:Request, res:Response) => {
     const {id} = req.params
 
-    // const photo: Photo | null = await photoRepository.findOneBy({
-    //     id: Number(id)
-    // })
-    const photo: Photo | null = await photoRepository.findOneBy({
-        id: Number(id)
-    })//.createQueryBuilder("photo").innerJoinAndSelect("photo.metadata", "metadata")
+    const photo = await getOnePhotoById(Number(id))
 
     if (!photo) return res.status(404).json({detail: `No photo found with id: ${id}`})
 
@@ -53,38 +27,21 @@ router.get('/:id', async (req:Request, res:Response) => {
 router.get('/',async (req:Request, res: Response) => {
     const { published } = req.query
 
-    const publishedBool: Boolean | undefined = published === undefined ? undefined : published === 'true' ? true : false
+    const publishedBool: boolean | undefined = published === undefined ? undefined : published === 'true' ? true : false
     
     // const photoRepository = AppDataSource.getRepository(Photo)
-
-    const allPhotos: Photo[] = published === undefined ?  await (await photoRepository.find({ 
-        relations: {
-            metadata: true
-        }
-    })) : await photoRepository.findBy({isPublished: publishedBool})
+    const allPhotos = await getAllPhotos(publishedBool)
 
     return res.json(allPhotos)
 })
 
 router.put('/:id',async (req:Request, res: Response) => {
     const {id} = req.params
-    const { name, description, filename, views, isPublished } = req.body
     
-    // const photoRepository = AppDataSource.getRepository(Photo)
-    
-    const photoToUpdate: Photo | null = await photoRepository.findOneBy({
-        id: Number(id)
-    })
-    
-    if (!photoToUpdate) return res.status(404).json({detail: `No photo found with id: ${id}`})
+    const photoToUpdate = await updateAPhoto(Number(id), req.body)
 
-    photoToUpdate.name = name
-    photoToUpdate.description = description
-    photoToUpdate.filename = filename
-    photoToUpdate.views = views
-    photoToUpdate.isPublished = isPublished
-
-    // await photoRepository.save(photoToUpdate)
+    if (photoToUpdate === undefined) return res.status(404).json({detail: `No photo found with that id: ${id}`})
+    if (photoToUpdate === null) return res.status(400).json({detail: `Error while saving the photo`})
     
     return res.status(200).json({data: photoToUpdate})
 })
@@ -92,17 +49,9 @@ router.put('/:id',async (req:Request, res: Response) => {
 router.delete('/:id',async (req:Request, res: Response) => {
     const {id} = req.params
 
-    // const photoRepository = AppDataSource.getRepository(Photo)
+    if (await deletePhoto(Number(id))) return res.sendStatus(204)
 
-    const photoToRemove: Photo | null = await photoRepository.findOneBy({
-        id: Number(id)
-    })
-
-    if (!photoToRemove) return res.status(404).json({detail: `No photo found with id: ${id}`})
-
-    await photoRepository.remove(photoToRemove)
-
-    return res.sendStatus(204)
+    return res.status(404).json({detail: `No photo found with id: ${id}`})
 })
 
 export default router

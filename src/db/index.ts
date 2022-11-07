@@ -1,13 +1,9 @@
-import { Photo } from './../models/photo-entity';
-import { PhotoMetadata } from '../models/photo-metadata-entity';
 import { DataSource } from "typeorm";
 
+import { Photo } from './../models/photo-entity';
+import { PhotoMetadata } from '../models/photo-metadata-entity';
 import { dbDatabase, dbHost, dbPassword, dbPort, dbUsername } from '../environment'
 import { Author } from '../models/author-entity';
-
-
-// console.log(typeof process.env.DATABASE_PASSWORD);
-
 
 const AppDataSource = new DataSource({
     type: "postgres",
