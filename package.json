@@ -1,7 +1,7 @@
 {
-  "name": "scp-typescript",
+  "name": "typescript-learn",
   "version": "1.0.0",
-  "description": "",
+  "description": "Learning some typescript and TypeORM library",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,7 +13,10 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.3",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "pg": "^8.8.0",
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.10"
   },
   "devDependencies": {
     "@types/express": "^4.17.14",
