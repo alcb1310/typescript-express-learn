@@ -1,4 +1,5 @@
 import { Photo } from './../models/photo-entity';
+import { PhotoMetadata } from '../models/photo-metadata-entity';
 import { DataSource } from "typeorm";
 
 import { dbDatabase, dbHost, dbPassword, dbPort, dbUsername } from '../environment'
@@ -15,7 +16,8 @@ const AppDataSource = new DataSource({
     password: dbPassword,
     database: dbDatabase,
     entities:[
-        Photo
+        Photo,
+        PhotoMetadata
     ],
     synchronize: true, 
     logging: false

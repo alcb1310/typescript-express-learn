@@ -1,10 +1,12 @@
 import { Request, Response, Router } from "express"
 import { Photo } from "../models/photo-entity"
+import { PhotoMetadata } from "../models/photo-metadata-entity"
 import { AppDataSource } from "../db"
 
 const router = Router()
 
 const photoRepository = AppDataSource.getRepository(Photo)
+const metadataRepository = AppDataSource.getRepository(PhotoMetadata)
 
 router.post('/', async(req: Request, res: Response) => {
     const { name, description, filename, views, isPublished } = req.body
@@ -18,17 +20,28 @@ router.post('/', async(req: Request, res: Response) => {
 
     await AppDataSource.manager.save(photo)
 
+    // create a photo metadata
+    const metadata = new PhotoMetadata()
+    metadata.height = 640
+    metadata.width = 480
+    metadata.compressed = true
+    metadata.comment = "cybershoot"
+    metadata.orientation = "portrait"
+    metadata.photo = photo // this way we connect them
+    await metadataRepository.save(metadata)
+
     return res.status(201).json({data: photo})
 })
 
 router.get('/:id', async (req:Request, res:Response) => {
     const {id} = req.params
 
-    // const photoRepository = AppDataSource.getRepository(Photo)
-
+    // const photo: Photo | null = await photoRepository.findOneBy({
+    //     id: Number(id)
+    // })
     const photo: Photo | null = await photoRepository.findOneBy({
         id: Number(id)
-    })
+    })//.createQueryBuilder("photo").innerJoinAndSelect("photo.metadata", "metadata")
 
     if (!photo) return res.status(404).json({detail: `No photo found with id: ${id}`})
 
@@ -44,7 +57,11 @@ router.get('/',async (req:Request, res: Response) => {
     
     // const photoRepository = AppDataSource.getRepository(Photo)
 
-    const allPhotos: Photo[] = published === undefined ?  await (await photoRepository.find()) : await photoRepository.findBy({isPublished: publishedBool})
+    const allPhotos: Photo[] = published === undefined ?  await (await photoRepository.find({ 
+        relations: {
+            metadata: true
+        }
+    })) : await photoRepository.findBy({isPublished: publishedBool})
 
     return res.json(allPhotos)
 })

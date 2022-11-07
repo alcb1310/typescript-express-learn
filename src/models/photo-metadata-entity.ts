@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn, Relation } from "typeorm";
 import { Photo } from "./photo-entity";
 
 @Entity()
@@ -10,7 +10,7 @@ export class PhotoMetadata{
     height: number
 
     @Column("int")
-    weight: number
+    width: number
 
     @Column()
     orientation: string
@@ -21,7 +21,7 @@ export class PhotoMetadata{
     @Column()
     comment: string
 
-    @OneToOne(() => Photo)
+    @OneToOne(type => Photo, photo => photo.metadata)
     @JoinColumn()
-    photo: Photo
+    photo: Relation<Photo>
 }
